@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Vue 入门</title>
+	<meta charset="utf-8">
+	<script type="text/javascript" src="./vue.min.js"></script>
+</head>
+<body>
+	<!-- 挂载点 -->
+	<div id="root">
+		<h1>Vue入门学习</h1>
+		<ul>
+			<li>
+				 Content值输入输出双向绑定</br>
+				<input v-model="content"/>
+				<button @click="handleClear">Clear</button>
+				<div>
+					Your input:{{content}}
+				</div>
+			</li>
+			<li>
+				<!-- v-html="content" v-text会转义，v-html不会 -->
+				<!-- v-on:click可以简写成@click -->
+				Click事件、值单向绑定,点击改变值（插值表达式{{}}）</br>
+				<div @click="handleVContent" :title="title">
+					{{v_content}}
+				</div>
+			</li>
+			<li>
+				计算属性computed和侦听器</br>
+				姓：<input v-model="firstName"/></br>
+				名：<input v-model="lastName"/>
+				<div>
+					Your Name：{{fullName}}</br>
+				</div>
+				Full Name 修改次数:{{count}}</br>
+			</li>	
+			<li>
+				v-if(删除代码块),v-show（显示隐藏，display属性控制）指令用法</br>
+				<div v-show="show">
+					Hello World!
+				</div>
+				<button @click="handleToggle">Toggle</button>
+			</li>
+			<li>
+				v-for（集合循环）指令用法</br>
+				<ul>
+					<li v-for="(item,index) of list" :key="index">{{item}}</li>
+				</ul>
+			</li>
+			<li>
+				简单To do list</br>
+				<input v-model="inputValue"/>
+				<button @click="handleSubmit">Submit</button>
+				<ul>
+					<li v-for="(item,index) of lists" :key="index">{{item}}</li>
+				</ul>
+			</li>
+			<li>
+				组件化To do list</br>
+				<ul>
+					<todo-item v-for="(item,index) of lists" 
+					:key="index" 
+					:content="item"
+					:index="index"
+					@delete="handleDelete">
+						
+					</todo-item>
+				</ul>
+			</li>
+		
+		</ul>
+	</div>
+	
+	<script type="text/javascript">
+		Vue.component('todo-item',{
+			// content属性接收参数
+			props:['content','index'],
+			template: '<li @click="handClick">{{content}}</li>',
+			methods: {
+				handClick:function() {
+					this.$emit('delete',this.index);
+				}
+			}
+		})
+
+		// vue实例-
+		new Vue({
+			el: "#root",// 挂载点
+			data : {
+				content: "",
+				v_content:"hello",
+				title:"I am title",
+				firstName:"",
+				lastName:"",
+				count : 0,
+				show: true,
+				list:[1,2,3],
+				inputValue:"",
+				lists:[]
+			},
+			methods:{
+				handleVContent:function () {
+					if (this.v_content == "hello") {
+						this.v_content = "world";
+					} else {
+						this.v_content = "hello";
+					}
+					this.title = this.v_content;
+				},
+				handleClear:function() {
+					this.content = "";
+				},
+				handleToggle:function() {
+					this.show = !this.show;
+				},
+				handleSubmit:function() {
+					this.lists.push(this.inputValue);
+					this.inputValue = '';
+				},
+				handleDelete:function(index) {
+					this.lists.splice(index,1);
+				}
+			},
+			// 计算属性
+			computed: {
+				fullName: function () {
+					return this.firstName + " " + this.lastName;
+				}
+			},
+			// 侦听器
+			watch : {
+				fullName : function() {
+					this.count++;
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>
